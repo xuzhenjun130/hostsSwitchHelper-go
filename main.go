@@ -8,8 +8,11 @@ import (
 	"hostsSwitchHelper/lib"
 	"io"
 	"io/ioutil"
+	"mime"
 	"net/http"
 	"os"
+	"os/exec"
+	"runtime"
 	"strings"
 )
 
@@ -26,6 +29,8 @@ func main() {
 	crontab.Start()
 
 	//静态文件服务器
+	//添加文件类型，windows下测试，默认js文件响应的header：content-type不正确，会报错：Service Worker registration error: Unsupported MIME type ('text/plain')
+	mime.AddExtensionType(".js", "application/javascript")
 	fs := http.FileServer(http.Dir("ui/"))
 	http.Handle("/", http.StripPrefix("/", fs))
 	//获取配置
@@ -38,8 +43,14 @@ func main() {
 	http.HandleFunc("/addConfig", addConfig)
 	//更新
 	http.HandleFunc("/updateConfig", updateConfig)
+	url := "127.0.0.1:8011"
+	fmt.Println("程序已经启动，浏览器自动打开网址：" + url)
+	err := open("http://" + url)
+	if err != nil{
+		fmt.Println("打开浏览器失败，请手动复制网址打开：" + err.Error())
+	}
+	http.ListenAndServe(url, nil)
 
-	http.ListenAndServe("127.0.0.1:8011", nil)
 }
 
 // 定时更新http连接的内容
@@ -57,7 +68,6 @@ func handlerTask() {
 			if err != nil{
 				log.Error("读取配置错误" + err.Error())
 			}
-			fmt.Println(body)
 			configs[i].Hosts = string(body)
 			lib.UpdateConfig(configs[i])
 		}
@@ -125,4 +135,21 @@ func editConfig(w http.ResponseWriter, r *http.Request, method string)  {
 		w.Write([]byte(err.Error()))
 	}
 	w.Write([]byte("ok"))
+}
+// 浏览器打开网址
+func open(uri string) error {
+	var commands = map[string]string{
+		"windows": "start",
+		"darwin":  "open",
+		"linux":   "xdg-open",
+	}
+	run, ok := commands[runtime.GOOS]
+	if !ok {
+		return fmt.Errorf("don't know how to open things on %s platform", runtime.GOOS)
+	}
+	if run=="start" {
+		return exec.Command(`cmd`, `/c`, `start`, uri).Start()
+	}else{
+		return exec.Command(run, uri).Start()
+	}
 }
