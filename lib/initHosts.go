@@ -10,12 +10,18 @@ import (
 	"runtime"
 )
 
+var sudoPwd string
+
 type Config struct {
 	Id     string `json:"id"`
 	Hosts  string `json:"hosts"`
 	Name   string `json:"name"`
 	Status string `json:"status"`
 	IP     string `json:"ip,omitempty"`
+}
+
+func SetPwd(pwd string) {
+	sudoPwd = pwd
 }
 
 //读取配置
@@ -102,13 +108,29 @@ func GetRealPath(fileName string) string {
 //保存配置
 func saveConfig(configs []Config) error {
 	//修改系统hosts 文件
-	hosts := "";
+	hosts := ""
+	hostsPath := GetHostsPath()
 	for i := 0; i < len(configs); i++ {
 		if configs[i].Status == "on" {
 			hosts += configs[i].Hosts + "\n"
 		}
 	}
-	ioutil.WriteFile(GetHostsPath(),[]byte(hosts), 0644)
+	if runtime.GOOS == "windows" {
+		err := ioutil.WriteFile(hostsPath, []byte(hosts), 0644)
+		if err != nil {
+			log.Error("保存hosts文件失败:" + err.Error())
+		}
+	} else {
+		//linux use sudo password to change
+		tmpFile := GetRealPath("tmp.log")
+		ioutil.WriteFile(tmpFile, []byte(hosts), 0644)
+		cmd := "echo '" + sudoPwd + "' | " + "sudo -S cp '" + tmpFile + "' " + hostsPath
+		err := exec.Command("bash", "-c", cmd).Run()
+		if err != nil {
+			log.Error("保存hosts文件失败:" + err.Error())
+		}
+	}
+
 	//修改配置文件
 	filePtr, err := os.OpenFile(GetRealPath("config.json"), os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {

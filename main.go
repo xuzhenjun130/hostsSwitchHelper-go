@@ -19,6 +19,24 @@ import (
 )
 
 func main() {
+	if runtime.GOOS != "windows" {
+		fmt.Println("修改hosts文件需要sudo密码，请输入:")
+		var sudoPwd string
+		for {
+			if _, err := fmt.Scanf("%s", &sudoPwd); err != nil {
+				fmt.Printf("%s\n", err)
+				return
+			}
+			cmd := "echo '" + sudoPwd + "' | sudo -S ls"
+			_, err := exec.Command("bash", "-c", cmd).Output()
+			if err != nil {
+				fmt.Printf("sudo密码不正确，请重新输入.\n")
+			}
+			lib.SetPwd(sudoPwd)
+			break
+		}
+	}
+
 	//配置日志输出到console,同时写文件
 	writer1 := os.Stdout
 	writer2, _ := os.OpenFile(lib.GetRealPath("run.log"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0755)
@@ -31,6 +49,8 @@ func main() {
 	// 添加定时任务,定时检查 桌面pwa快捷方式 每3秒执行一次
 	crontab.AddFunc("@every 3s", checkPwaLink)
 	crontab.Start()
+
+	updateUrlHosts()
 
 	//静态文件服务器
 	//添加文件类型，windows下测试，默认js文件响应的header：content-type不正确，会报错：Service Worker registration error: Unsupported MIME type ('text/plain')
@@ -55,7 +75,10 @@ func main() {
 			fmt.Println("打开浏览器失败，请手动复制网址打开：" + err.Error())
 		}
 	}
-	http.ListenAndServe(url, nil)
+	err := http.ListenAndServe(url, nil)
+	if err != nil {
+		fmt.Println("服务启动失败：" + err.Error())
+	}
 }
 
 // 定时更新http连接的内容
