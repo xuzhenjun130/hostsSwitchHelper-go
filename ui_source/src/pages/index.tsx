@@ -69,7 +69,7 @@ export default () => {
   const menuStyle = {
     margin: '0 5px',
   };
-
+  
   //右侧输入配置
   let cmOptions = {
     // codemirror options
@@ -77,7 +77,7 @@ export default () => {
     mode: 'text/x-ttcn-cfg',
     lineNumbers: true,
     line: true,
-    readOnly: temp.name == '系统hosts',
+    readOnly: temp.name == '系统hosts' || temp.ip.indexOf("http") >=0,
     extraKeys: {
       // 回车自动补全ip
       Enter: (cm: any) => {

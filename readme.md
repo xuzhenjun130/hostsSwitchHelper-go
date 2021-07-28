@@ -1,4 +1,18 @@
+## Go内嵌静态资源
+将ui静态资源打包进go里面，编译后生成单一的可执行文件，感觉特别干净清爽。
 
+https://github.com/go-bindata/go-bindata
+
+>"E:\go\src\bin\go-bindata.exe"  -fs -prefix "/" ui/
+
+生成一个 bindata.go 文件，里面包含了静态资源的二进制代码。
+AssetFile() 是 bindata.go 中的函数
+
+http服务调用go内部的静态资源
+```go
+fs := http.FileServer(AssetFile())
+ http.Handle("/", http.StripPrefix("/", fs))
+```
 
 ## go编译的可执行文件添加图标
 
@@ -65,6 +79,4 @@ go build -ldflags "-s -w"
   `-9` 最大压缩
 
 此时得到的文件体积只有 `1M` 多了，amazing！
-
-
 

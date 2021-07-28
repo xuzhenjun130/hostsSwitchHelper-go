@@ -55,7 +55,7 @@ func main() {
 	//静态文件服务器
 	//添加文件类型，windows下测试，默认js文件响应的header：content-type不正确，会报错：Service Worker registration error: Unsupported MIME type ('text/plain')
 	mime.AddExtensionType(".js", "application/javascript")
-	fs := http.FileServer(http.Dir("ui/"))
+	fs := http.FileServer(AssetFile())
 	http.Handle("/", http.StripPrefix("/", fs))
 	//获取配置
 	http.HandleFunc("/getConfig", getConfig)

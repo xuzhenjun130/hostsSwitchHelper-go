@@ -10,6 +10,7 @@ export default defineConfig({
     { path: '/', component: '@/pages/index' },
   ],
   fastRefresh: {},
+  outputPath: '../ui',
   //pwd 相关配置
   copy: ['/pwa'],
   links: [{ rel: 'manifest', href: `/${manifestName}` }, { rel: "shortcut icon", href:"favicon.ico"}], // 手动插入 .webmanifest 文件的 link
