@@ -3,9 +3,38 @@
 
 https://github.com/go-bindata/go-bindata
 
->"E:\go\src\bin\go-bindata.exe"  -fs -prefix "/" ui/
+>"E:\go\src\bin\go-bindata.exe"  -fs -prefix "/" ui/  ui/icons
 
 生成一个 bindata.go 文件，里面包含了静态资源的二进制代码。
+bindata.go 里面的 `_bindata` 还需要修改一下文件url路径
+```go
+var _bindata = map[string]func() (*asset, error){
+	"go/src/hostsSwitchHelper/ui/favicon.ico":          goSrcHostsswitchhelperUiFaviconIco,
+	"go/src/hostsSwitchHelper/ui/index.html":           goSrcHostsswitchhelperUiIndexHtml,
+	"go/src/hostsSwitchHelper/ui/manifest.webmanifest": goSrcHostsswitchhelperUiManifestWebmanifest,
+	"go/src/hostsSwitchHelper/ui/sw.js":                goSrcHostsswitchhelperUiSwJs,
+	"go/src/hostsSwitchHelper/ui/umi.css":              goSrcHostsswitchhelperUiUmiCss,
+	"go/src/hostsSwitchHelper/ui/umi.js":               goSrcHostsswitchhelperUiUmiJs,
+	"go/src/hostsSwitchHelper/ui/workbox-15dd0bab.js":  goSrcHostsswitchhelperUiWorkbox15dd0babJs,
+	"go/src/hostsSwitchHelper/ui/icons/156.png":        goSrcHostsswitchhelperUiIcons156Png,
+	"go/src/hostsSwitchHelper/ui/icons/48.png":         goSrcHostsswitchhelperUiIcons48Png,
+	"go/src/hostsSwitchHelper/ui/icons/64.png":         goSrcHostsswitchhelperUiIcons64Png,
+}
+// 改成：
+var _bindata = map[string]func() (*asset, error){
+"favicon.ico":          goSrcHostsswitchhelperUiFaviconIco,
+"index.html":           goSrcHostsswitchhelperUiIndexHtml,
+"manifest.webmanifest": goSrcHostsswitchhelperUiManifestWebmanifest,
+"sw.js":                goSrcHostsswitchhelperUiSwJs,
+"umi.css":              goSrcHostsswitchhelperUiUmiCss,
+"umi.js":               goSrcHostsswitchhelperUiUmiJs,
+"workbox-15dd0bab.js":  goSrcHostsswitchhelperUiWorkbox15dd0babJs,
+"icons/156.png":        goSrcHostsswitchhelperUiIcons156Png,
+"icons/48.png":         goSrcHostsswitchhelperUiIcons48Png,
+"icons/64.png":         goSrcHostsswitchhelperUiIcons64Png,
+}
+```
+
 AssetFile() 是 bindata.go 中的函数
 
 http服务调用go内部的静态资源
