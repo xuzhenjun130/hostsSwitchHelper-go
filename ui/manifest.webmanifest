@@ -1,0 +1,26 @@
+{
+    "name": "Hosts切换助手",
+    "short_name": "Hosts切换助手",
+    "description": "快速切换、编辑hosts配置，定时更新hosts配置的工具",
+    "icons": [
+        {
+            "src": "icons/48.png",
+            "sizes": "48x48",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/64.png",
+            "sizes": "64x64",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/156.png",
+            "sizes": "156x156",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#1ABFBF",
+    "background_color": "#1ABFBF"
+}

@@ -23,7 +23,7 @@ export const delConfig = async (id: string) => {
 
 export const addConfig = async (data: any) => {
   //读取url
-  if(data.ip.indexOf("http")>=0){
+  if(data.ip && data.ip.indexOf("http")>=0){
      data.hosts =  "## " + data.name + "\n" + await request(data.ip);
   }
   return await request(baseUrl + 'addConfig', {
@@ -38,7 +38,7 @@ export const addConfig = async (data: any) => {
 
 export const updateConfig = async (data: any) => {
   //读取url
-  if(data.ip.indexOf("http")>=0){
+  if(data.ip && data.ip.indexOf("http")>=0){
     data.hosts =  "## " + data.name + "\n" + await request(data.ip);
  }
   return await request(baseUrl + 'updateConfig', {

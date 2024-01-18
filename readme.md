@@ -1,46 +1,24 @@
+## 该用webview 实现gui
+https://github.com/webview/webview_go
+
+windows 下编译需要先安装 `mingw-w64`
+并且设置环境变量 `CGO_ENABLED=1`
+
+
 ## Go内嵌静态资源
-将ui静态资源打包进go里面，编译后生成单一的可执行文件，感觉特别干净清爽。
-
-https://github.com/go-bindata/go-bindata
-
->"E:\go\src\bin\go-bindata.exe"  -fs -prefix "/" ui/  ui/icons
-
-生成一个 bindata.go 文件，里面包含了静态资源的二进制代码。
-bindata.go 里面的 `_bindata` 还需要修改一下文件url路径
-```go
-var _bindata = map[string]func() (*asset, error){
-	"go/src/hostsSwitchHelper/ui/favicon.ico":          goSrcHostsswitchhelperUiFaviconIco,
-	"go/src/hostsSwitchHelper/ui/index.html":           goSrcHostsswitchhelperUiIndexHtml,
-	"go/src/hostsSwitchHelper/ui/manifest.webmanifest": goSrcHostsswitchhelperUiManifestWebmanifest,
-	"go/src/hostsSwitchHelper/ui/sw.js":                goSrcHostsswitchhelperUiSwJs,
-	"go/src/hostsSwitchHelper/ui/umi.css":              goSrcHostsswitchhelperUiUmiCss,
-	"go/src/hostsSwitchHelper/ui/umi.js":               goSrcHostsswitchhelperUiUmiJs,
-	"go/src/hostsSwitchHelper/ui/workbox-15dd0bab.js":  goSrcHostsswitchhelperUiWorkbox15dd0babJs,
-	"go/src/hostsSwitchHelper/ui/icons/156.png":        goSrcHostsswitchhelperUiIcons156Png,
-	"go/src/hostsSwitchHelper/ui/icons/48.png":         goSrcHostsswitchhelperUiIcons48Png,
-	"go/src/hostsSwitchHelper/ui/icons/64.png":         goSrcHostsswitchhelperUiIcons64Png,
-}
-// 改成：
-var _bindata = map[string]func() (*asset, error){
-"favicon.ico":          goSrcHostsswitchhelperUiFaviconIco,
-"index.html":           goSrcHostsswitchhelperUiIndexHtml,
-"manifest.webmanifest": goSrcHostsswitchhelperUiManifestWebmanifest,
-"sw.js":                goSrcHostsswitchhelperUiSwJs,
-"umi.css":              goSrcHostsswitchhelperUiUmiCss,
-"umi.js":               goSrcHostsswitchhelperUiUmiJs,
-"workbox-15dd0bab.js":  goSrcHostsswitchhelperUiWorkbox15dd0babJs,
-"icons/156.png":        goSrcHostsswitchhelperUiIcons156Png,
-"icons/48.png":         goSrcHostsswitchhelperUiIcons48Png,
-"icons/64.png":         goSrcHostsswitchhelperUiIcons64Png,
-}
-```
-
-AssetFile() 是 bindata.go 中的函数
-
+将ui静态资源打包进go里面，编译后生成单一的可执行文件。
 http服务调用go内部的静态资源
 ```go
-fs := http.FileServer(AssetFile())
- http.Handle("/", http.StripPrefix("/", fs))
+
+//go:embed ui/*
+var ui embed.FS
+
+uiDir, err := fs.Sub(ui, "ui")
+if err != nil {
+    log.Fatal(err)
+}
+fileService := http.FileServer(http.FS(uiDir))
+http.Handle("/", http.StripPrefix("/", fileService))
 ```
 
 ## go编译的可执行文件添加图标
@@ -92,20 +70,8 @@ go 在windows下编译出来的可执行文件是没有图标的。
 
  1. 编译增加参数
 
-go build -ldflags "-s -w" 
+go build -ldflags "-s -w -H windowsgui"  
 
 其中  -ldflags 里的  -s 去掉符号信息， -w 去掉DWARF调试信息，得到的程序就不能用gdb调试了。
 
- 此时得到的文件体积有`5M`多
-
-
-
-2. 压缩加壳工具
-   https://github.com/upx/upx   免安装
-
-> upx.exe -9  hostsSwitchHelper.exe
-
-  `-9` 最大压缩
-
-此时得到的文件体积只有 `1M` 多了，amazing！
-
+ 此时得到的文件体积有`7M`多

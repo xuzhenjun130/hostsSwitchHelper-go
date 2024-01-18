@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>hosts-switch</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="stylesheet" href="/umi.css" />
+    <script>
+      window.routerBase = "/";
+    </script>
+    <script>
+      //! umi version: 3.5.41
+    </script>
+  </head>
+  <body>
+    <div id="root" style="height: 100%"></div>
+
+    <style>
+      .react-codemirror2,
+      .CodeMirror {
+        height: 100% !important;
+      }
+      .ant-menu-item-selected {
+        background: rgb(67, 74, 80) !important;
+      }
+      .operate:hover {
+        border: 1px solid #ccc;
+      }
+      .hide {
+        display: none;
+      }
+      /* 只有选中的，才显示修改、删除 */
+      .ant-menu-item-selected .hide {
+        display: inline-block;
+      }
+    </style>
+
+    <script src="/umi.js"></script>
+  </body>
+</html>
